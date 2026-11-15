@@ -3,8 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ZB System</title>
 
     <style>
@@ -18,25 +17,54 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #ffffff;
         }
 
         iframe {
-            display: block;
             width: 100%;
             height: 100%;
             border: none;
+            display: block;
         }
     </style>
 </head>
 <body>
 
     <iframe
+        id="appFrame"
         src="https://zoubair.pythonanywhere.com/"
-        title="ZB System"
-        allow="fullscreen"
-        referrerpolicy="strict-origin-when-cross-origin">
+        title="ZB System">
     </iframe>
+
+    <script>
+        const frame = document.getElementById("appFrame");
+
+        // Listen for navigation messages from your Flask application.
+        window.addEventListener("message", function(event) {
+
+            // Only accept messages from your actual Flask domain.
+            if (event.origin !== "https://zoubair.pythonanywhere.com") {
+                return;
+            }
+
+            if (
+                event.data &&
+                event.data.type === "ZB_NAVIGATE" &&
+                typeof event.data.url === "string"
+            ) {
+                const destination = new URL(
+                    event.data.url,
+                    "https://zoubair.pythonanywhere.com"
+                );
+
+                if (destination.origin !==
+                    "https://zoubair.pythonanywhere.com") {
+                    return;
+                }
+
+                window.location.href = destination.href;
+            }
+        });
+    </script>
 
 </body>
 </html>
